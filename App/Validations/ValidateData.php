@@ -24,7 +24,6 @@ trait  ValidateData
             foreach ($fields as $field){
                 $items = explode("||", $field);
                 $itemsCount = count($items);
-//                dd($items[1]);
                 if($itemsCount == 2){
                     $validations_param_string = $items[1];
                     $validations = explode('|', $validations_param_string);
