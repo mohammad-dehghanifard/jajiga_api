@@ -31,24 +31,29 @@ class AuthController
     {
         // validate request
         $this->validate([
-            'username||required|min:3|max:25',
-            'password||required|min:8',
+            'username||min:3|max:25',
+            'mobile_number||required|min:8',
         ], $request);
-
-
+        $findUser = null;
         // get user
-        $findUser = $this->queryBuilder->table('users')
-            ->where('username', '=', $request->username)
-            ->where('password', '=', $request->password)
-            ->get()->execute();
+        if(isset($request->mobile_number))
+        {
+            $findUser = $this->queryBuilder->table('users')
+                ->where('mobile', '=', $request->mobile_number)
+                ->get()->execute();
+        }elseif (isset($request->username)){
+            $findUser = $this->queryBuilder->table('users')
+                ->where('username', '=', $request->username)
+                ->get()->execute();
+        }
 
-        // Example validation: check if username is 'admin' and password is 'admin123'
+
         if ($findUser) {
             // Generate JWT token
-            $token = $this->generateToken($request->username, $request->password);
+            $token = $this->generateToken($findUser->username, $request->mobile_number);
 
             // Return token as JSON response
-            return $this->sendResponse(data: ['token' => $token], message: "با موفقیت وارد شدید");
+            return $this->sendResponse(data: ['token' => $token,], message: "با موفقیت وارد شدید");
         } else {
             // If credentials are not valid, return error response
             return $this->sendResponse(message: "نام کاربری یا رمز عبور شما صحیح نیست!", error: true, status:  HTTP_Unauthorized);
