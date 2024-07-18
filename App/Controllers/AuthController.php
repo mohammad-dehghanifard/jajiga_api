@@ -21,14 +21,18 @@ class AuthController
     }
 
 
-
+    public function test()
+    {
+        $query = $this->queryBuilder->table("users")->getAll()->execute();
+        return $this->sendResponse(data: $query);
+    }
 
     public function login($request)
     {
         // validate request
         $this->validate([
             'username||required|min:3|max:25',
-            'password||required|min:8'
+            'password||required|min:8',
         ], $request);
 
 
@@ -54,8 +58,10 @@ class AuthController
     public function register($request){
         // validate request
         $this->validate([
-            'username||required|min:3|max:25',
-            'mobile_number||required|min:8'
+            'username||required|min:3|max:25|string',
+            'display_name||main:3|max:40|string',
+            'mobile_number||required|min:8',
+            "role||enum:admin,guest,host,supporter"
         ], $request);
         $this->checkUnique('users', 'username', $request->username);
         $this->checkUnique('users', 'mobile', $request->mobile_number);
